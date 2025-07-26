@@ -29,12 +29,7 @@ const { verifyAccessToken } = require('./helpers/jwt_helper')
 const cors = require('cors');
 
 // Allow requests from your React frontend
-app.use(
-  cors({
-    origin: ['http://localhost:5173'], // ✅ allow React dev server
-    credentials: true, // ✅ allow cookies if using them
-  })
-);
+
 
 
 const AuthRoute = require('./api/Auth.Route')
@@ -43,6 +38,12 @@ const app = express()
 app.use(morgan('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
+
+app.use(
+  cors({
+    origin: '*', // ✅ Allows requests from ANY origin
+  })
+);
 
 app.get('/', verifyAccessToken, async (req, res, next) => {
   res.send('Hello from express.')
