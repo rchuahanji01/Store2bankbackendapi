@@ -26,6 +26,17 @@ require('./helpers/init_mongodb')
 const { verifyAccessToken } = require('./helpers/jwt_helper')
 // require('./helpers/init_redis')
 
+const cors = require('cors');
+
+// Allow requests from your React frontend
+app.use(
+  cors({
+    origin: ['http://localhost:5173'], // ✅ allow React dev server
+    credentials: true, // ✅ allow cookies if using them
+  })
+);
+
+
 const AuthRoute = require('./api/Auth.Route')
 console.log("down the authRoute")
 const app = express()
