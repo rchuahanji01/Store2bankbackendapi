@@ -80,16 +80,16 @@ module.exports = {
       next(error)
     }
   },
-  getAllUsers: async (req, res, next) => {
+getAllUsers: async (req, res, next) => {
   try {
-    // Extract pagination params from body (or default)
+    // ✅ Extract pagination data from body (POST)
     const { page = 1, limit = 10 } = req.body;
 
     const skip = (parseInt(page) - 1) * parseInt(limit);
 
     const [users, total] = await Promise.all([
       User.find({}, '-password')
-        .sort({ createdAt: -1 }) // Most recent first
+        .sort({ createdAt: -1 }) // Sort by recent
         .skip(skip)
         .limit(parseInt(limit)),
       User.countDocuments()
@@ -103,7 +103,7 @@ module.exports = {
         total,
         page: parseInt(page),
         limit: parseInt(limit),
-        totalPages: Math.ceil(total / limit),
+        totalPages: Math.ceil(total / limit)
       }
     });
   } catch (error) {
@@ -111,59 +111,68 @@ module.exports = {
     next(createError.InternalServerError("Failed to fetch users"));
   }
 },
- searchUsers: async (req, res, next) => {
-    try {
-      const { search = '', page = 1, limit = 10 } = req.body;
 
-      const query = {
-        $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
-          { mobileNumber: { $regex: search, $options: 'i' } },
-          { role: { $regex: search, $options: 'i' } },
-        ]
-      };
+searchUsers: async (req, res, next) => {
+  try {
+    const { search = '', page = 1, limit = 10 } = req.body;
 
-      const skip = (page - 1) * limit;
+    const query = {
+      $or: [
+        { name: { $regex: search, $options: 'i' } },
+        { email: { $regex: search, $options: 'i' } },
+        { mobileNumber: { $regex: search, $options: 'i' } },
+        { role: { $regex: search, $options: 'i' } }
+      ]
+    };
 
-      const [users, total] = await Promise.all([
-        User.find(query, '-password')
-          .sort({ createdAt: -1 })
-          .skip(skip)
-          .limit(limit),
-        User.countDocuments(query)
-      ]);
+    const skip = (parseInt(page) - 1) * parseInt(limit);
 
-      res.status(200).json({
-        code: 200,
-        message: 'Users fetched successfully',
-        data: users,
-        pagination: {
-          page: Number(page),
-          limit: Number(limit),
-          total,
-          totalPages: Math.ceil(total / limit)
-        }
-      });
-    } catch (error) {
-      console.error('❌ Error in searchUsers:', error);
-      next(createError.InternalServerError('Failed to search users'));
-    }
-  },
+    const [users, total] = await Promise.all([
+      User.find(query, '-password')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(parseInt(limit)),
+      User.countDocuments(query)
+    ]);
+
+    res.status(200).json({
+      code: 200,
+      message: 'Users fetched successfully',
+      data: users,
+      pagination: {
+        page: parseInt(page),
+        limit: parseInt(limit),
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    console.error('❌ Error in searchUsers:', error);
+    next(createError.InternalServerError('Failed to search users'));
+  }
+},
+
   // Delete user by ID from body
 deleteUserByBody: async (req, res, next) => {
   try {
     const { id } = req.body;
-    if (!id) return next(createError.BadRequest("User ID is required"));
+
+    if (!id) {
+      return next(createError.BadRequest("User ID is required"));
+    }
 
     const deletedUser = await User.findByIdAndDelete(id);
-    if (!deletedUser) return next(createError.NotFound("User not found"));
+
+    if (!deletedUser) {
+      return next(createError.NotFound("User not found"));
+    }
 
     res.status(200).json({
       code: 200,
       message: "User deleted successfully",
     });
   } catch (error) {
+    console.error("❌ Error in deleteUserByBody:", error);
     next(createError.InternalServerError("Failed to delete user"));
   }
 },
@@ -172,7 +181,10 @@ deleteUserByBody: async (req, res, next) => {
 updateUserByBody: async (req, res, next) => {
   try {
     const { id, name, email, mobileNumber, role } = req.body;
-    if (!id) return next(createError.BadRequest("User ID is required"));
+
+    if (!id) {
+      return next(createError.BadRequest("User ID is required"));
+    }
 
     const updatedUser = await User.findByIdAndUpdate(
       id,
@@ -180,7 +192,9 @@ updateUserByBody: async (req, res, next) => {
       { new: true, runValidators: true }
     );
 
-    if (!updatedUser) return next(createError.NotFound("User not found"));
+    if (!updatedUser) {
+      return next(createError.NotFound("User not found"));
+    }
 
     res.status(200).json({
       code: 200,
@@ -188,9 +202,11 @@ updateUserByBody: async (req, res, next) => {
       data: updatedUser,
     });
   } catch (error) {
+    console.error("❌ Error in updateUserByBody:", error);
     next(createError.InternalServerError("Failed to update user"));
   }
 },
+
 
 
 }

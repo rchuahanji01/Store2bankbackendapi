@@ -8,14 +8,14 @@ router.post('/login', AuthController.login)
 
 router.post('/refresh-token', AuthController.refreshToken)
 
-router.delete('/logout', AuthController.logout)
+router.post('/logout', AuthController.logout)
 
-router.get('/users' ,AuthController.getAllUsers )
+router.post('/users' ,AuthController.getAllUsers )
 
 router.post('/users/search', AuthController.searchUsers);
 
-router.delete('/users', AuthController.deleteUserByBody);
+router.post('/users/delete', AuthController.deleteUserByBody);
 
-router.put('/users', AuthController.updateUserByBody);
+router.post('/users/update', AuthController.updateUserByBody);
 
 module.exports = router
