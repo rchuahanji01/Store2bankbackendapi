@@ -10,4 +10,12 @@ router.post('/refresh-token', AuthController.refreshToken)
 
 router.delete('/logout', AuthController.logout)
 
+router.get('/users' ,AuthController.getAllUsers )
+
+router.post('/users/search', AuthController.searchUsers);
+
+router.delete('/users', AuthController.deleteUserByBody);
+
+router.put('/users', AuthController.updateUserByBody);
+
 module.exports = router
