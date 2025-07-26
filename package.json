@@ -1,0 +1,25 @@
+{
+  "name": "store2bank_backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@hapi/joi": "^17.1.1",
+    "bcrypt": "^6.0.0",
+    "body-parser": "^2.2.0",
+    "crypto": "^1.0.1",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.5",
+    "morgan": "^1.10.1",
+    "nodemon": "^3.1.10",
+    "redis": "^5.6.1"
+  }
+}
